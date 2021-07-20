@@ -135,3 +135,9 @@ function is_valid_upload_image($image){
   return true;
 }
 
+/**
+ * htmlエスケープ処理(特殊文字をhtmlエンティティに変換する処理)
+ * 
+ * @param  str $str    htmlエンティティに変換したい変数
+ * @return str ($str)  htmlエンティティに変換後の変数
+ */
