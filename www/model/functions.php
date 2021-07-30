@@ -145,16 +145,3 @@ function is_valid_upload_image($image){
 function h ($str) {
   return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
 }
-
-
-/**
- * XSS対策処理
- * 
- * @param  str $str    XSS対策前の文字列
- * @return str ($str)  XSS対策後の文字列
- */
-
-function xss_measures ($str) {
-  $str = htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
-  return strip_tags($str);
-}
