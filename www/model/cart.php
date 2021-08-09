@@ -77,16 +77,19 @@ function insert_cart($db, $user_id, $item_id, $amount = 1){
 }
 
 function update_cart_amount($db, $cart_id, $amount){
+  /* 値を直接代入からPDOStatement::executeのバインド機能を使用したのもに修正 */
   $sql = "
     UPDATE
       carts
     SET
-      amount = {$amount}
+      amount = :amount
     WHERE
-      cart_id = {$cart_id}
+      cart_id = :cart_id
     LIMIT 1
   ";
-  return execute_query($db, $sql);
+  /* $amountおよび$cart_idをPDOStatement::execute用の配列に格納 */
+  $params = array(':amount' => $amount, ':cart_id' => $cart_id);
+  return execute_query($db, $sql, $params);
 }
 
 function delete_cart($db, $cart_id){

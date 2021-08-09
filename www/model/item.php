@@ -103,17 +103,19 @@ function update_item_status($db, $item_id, $status){
 }
 
 function update_item_stock($db, $item_id, $stock){
+  /* 値を直接代入からPDOStatement::executeのバインド機能を使用したのもに修正 */
   $sql = "
     UPDATE
       items
     SET
-      stock = {$stock}
+      stock = :stock
     WHERE
-      item_id = {$item_id}
+      item_id = :item_id
     LIMIT 1
   ";
-  
-  return execute_query($db, $sql);
+  /* $stockおよび$item_idをPDOStatement::execute用の配列に格納 */
+  $params = array(':stock' => $stock, ':item_id' => $item_id);
+  return execute_query($db, $sql, $params);
 }
 
 function destroy_item($db, $item_id){
