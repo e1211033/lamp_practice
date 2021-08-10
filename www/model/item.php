@@ -73,6 +73,7 @@ function regist_item_transaction($db, $name, $price, $stock, $status, $image, $f
 
 function insert_item($db, $name, $price, $stock, $filename, $status){
   $status_value = PERMITTED_ITEM_STATUSES[$status];
+  /* 値を直接代入からPDOStatement::executeのバインド機能を使用したのもに修正 */
   $sql = "
     INSERT INTO
       items(
@@ -82,24 +83,27 @@ function insert_item($db, $name, $price, $stock, $filename, $status){
         image,
         status
       )
-    VALUES('{$name}', {$price}, {$stock}, '{$filename}', {$status_value});
+    VALUES(:name, :price, :stock, :filename, :status_value);
   ";
-
-  return execute_query($db, $sql);
+  /* $name, $price, $stock, $filename, $status_valueをPDOStatement::execute用の配列に格納 */
+  $params = array(':name' => $name, ':price' => $price, ':stock' => $stock, ':filename' => $filename, ':status_value' => $status_value);  
+  return execute_query($db, $sql, $params);
 }
 
 function update_item_status($db, $item_id, $status){
+  /* 値を直接代入からPDOStatement::executeのバインド機能を使用したのもに修正 */
   $sql = "
     UPDATE
       items
     SET
-      status = {$status}
+      status = :status
     WHERE
-      item_id = {$item_id}
+      item_id = :item_id
     LIMIT 1
   ";
-  
-  return execute_query($db, $sql);
+  /* $statusおよび$item_idをPDOStatement::execute用の配列に格納 */
+  $params = array(':status' => $status, ':item_id' => $item_id);  
+  return execute_query($db, $sql, $params);
 }
 
 function update_item_stock($db, $item_id, $stock){
@@ -134,15 +138,17 @@ function destroy_item($db, $item_id){
 }
 
 function delete_item($db, $item_id){
+  /* 値を直接代入からPDOStatement::executeのバインド機能を使用したのもに修正 */
   $sql = "
     DELETE FROM
       items
     WHERE
-      item_id = {$item_id}
+      item_id = :item_id
     LIMIT 1
   ";
-  
-  return execute_query($db, $sql);
+  /* $item_idをPDOStatement::execute用の配列に格納 */
+  $params = array(':item_id' => $item_id);    
+  return execute_query($db, $sql, $params);
 }
 
 
