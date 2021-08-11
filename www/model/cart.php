@@ -3,6 +3,7 @@ require_once MODEL_PATH . 'functions.php';
 require_once MODEL_PATH . 'db.php';
 
 function get_user_carts($db, $user_id){
+  /* 値を直接代入からPDOStatement::executeのバインド機能を使用したのもに修正 */
   $sql = "
     SELECT
       items.item_id,
@@ -21,12 +22,15 @@ function get_user_carts($db, $user_id){
     ON
       carts.item_id = items.item_id
     WHERE
-      carts.user_id = {$user_id}
+      carts.user_id = :user_id
   ";
-  return fetch_all_query($db, $sql);
+  /* $user_idをPDOStatement::execute用の配列に格納 */
+  $params = array(':user_id' => $user_id);
+  return fetch_all_query($db, $sql, $params);
 }
 
 function get_user_cart($db, $user_id, $item_id){
+  /* 値を直接代入からPDOStatement::executeのバインド機能を使用したのもに修正 */
   $sql = "
     SELECT
       items.item_id,
@@ -45,12 +49,13 @@ function get_user_cart($db, $user_id, $item_id){
     ON
       carts.item_id = items.item_id
     WHERE
-      carts.user_id = {$user_id}
+      carts.user_id = :user_id
     AND
-      items.item_id = {$item_id}
+      items.item_id = :item_id
   ";
-
-  return fetch_query($db, $sql);
+  /* $user_id, $item_idをPDOStatement::execute用の配列に格納 */
+  $params = array(':user_id' => $user_id, ':item_id' => $item_id);
+  return fetch_query($db, $sql, $params);
 
 }
 

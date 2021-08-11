@@ -5,6 +5,7 @@ require_once MODEL_PATH . 'db.php';
 // DB利用
 
 function get_item($db, $item_id){
+  /* 値を直接代入からPDOStatement::executeのバインド機能を使用したのもに修正 */
   $sql = "
     SELECT
       item_id,
@@ -16,10 +17,11 @@ function get_item($db, $item_id){
     FROM
       items
     WHERE
-      item_id = {$item_id}
+      item_id = :item_id
   ";
-
-  return fetch_query($db, $sql);
+  /* $item_idをPDOStatement::execute用の配列に格納 */
+  $params = array(':item_id' => $item_id);
+  return fetch_query($db, $sql, $params);
 }
 
 function get_items($db, $is_open = false){

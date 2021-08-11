@@ -3,6 +3,7 @@ require_once MODEL_PATH . 'functions.php';
 require_once MODEL_PATH . 'db.php';
 
 function get_user($db, $user_id){
+  /* 値を直接代入からPDOStatement::executeのバインド機能を使用したのもに修正 */
   $sql = "
     SELECT
       user_id, 
@@ -12,14 +13,16 @@ function get_user($db, $user_id){
     FROM
       users
     WHERE
-      user_id = {$user_id}
+      user_id = :user_id
     LIMIT 1
   ";
-
-  return fetch_query($db, $sql);
+  /* $user_idをPDOStatement::execute用の配列に格納 */
+  $params = array(':user_id' => $user_id);
+  return fetch_query($db, $sql, $params);
 }
 
 function get_user_by_name($db, $name){
+  /* 値を直接代入からPDOStatement::executeのバインド機能を使用したのもに修正 */
   $sql = "
     SELECT
       user_id, 
@@ -29,11 +32,12 @@ function get_user_by_name($db, $name){
     FROM
       users
     WHERE
-      name = '{$name}'
+      name = :name
     LIMIT 1
   ";
-
-  return fetch_query($db, $sql);
+  /* $nameをPDOStatement::execute用の配列に格納 */
+  $params = array(':name' => $name);
+  return fetch_query($db, $sql, $params);
 }
 
 function login_as($db, $name, $password){
