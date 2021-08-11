@@ -1,8 +1,9 @@
-<?php 
+<?php
 require_once MODEL_PATH . 'functions.php';
 require_once MODEL_PATH . 'db.php';
 
 function get_user_carts($db, $user_id){
+  /* 値を直接代入からPDOStatement::executeのバインド機能を使用したのもに修正 */
   $sql = "
     SELECT
       items.item_id,
@@ -21,12 +22,15 @@ function get_user_carts($db, $user_id){
     ON
       carts.item_id = items.item_id
     WHERE
-      carts.user_id = {$user_id}
+      carts.user_id = :user_id
   ";
-  return fetch_all_query($db, $sql);
+  /* $user_idをPDOStatement::execute用の配列に格納 */
+  $params = array(':user_id' => $user_id);
+  return fetch_all_query($db, $sql, $params);
 }
 
 function get_user_cart($db, $user_id, $item_id){
+  /* 値を直接代入からPDOStatement::executeのバインド機能を使用したのもに修正 */
   $sql = "
     SELECT
       items.item_id,
@@ -45,12 +49,13 @@ function get_user_cart($db, $user_id, $item_id){
     ON
       carts.item_id = items.item_id
     WHERE
-      carts.user_id = {$user_id}
+      carts.user_id = :user_id
     AND
-      items.item_id = {$item_id}
+      items.item_id = :item_id
   ";
-
-  return fetch_query($db, $sql);
+  /* $user_id, $item_idをPDOStatement::execute用の配列に格納 */
+  $params = array(':user_id' => $user_id, ':item_id' => $item_id);
+  return fetch_query($db, $sql, $params);
 
 }
 
@@ -63,6 +68,7 @@ function add_cart($db, $user_id, $item_id ) {
 }
 
 function insert_cart($db, $user_id, $item_id, $amount = 1){
+  /* 値を直接代入からPDOStatement::executeのバインド機能を使用したのもに修正 */
   $sql = "
     INSERT INTO
       carts(
@@ -70,35 +76,41 @@ function insert_cart($db, $user_id, $item_id, $amount = 1){
         user_id,
         amount
       )
-    VALUES({$item_id}, {$user_id}, {$amount})
+    VALUES(:item_id, :user_id, :amount)
   ";
-
-  return execute_query($db, $sql);
+  /* $item_id, $user_id, $amountをPDOStatement::execute用の配列に格納 */
+  $params = array(':item_id' => $item_id, ':user_id' => $user_id, ':amount' => $amount);
+  return execute_query($db, $sql, $params);
 }
 
 function update_cart_amount($db, $cart_id, $amount){
+  /* 値を直接代入からPDOStatement::executeのバインド機能を使用したのもに修正 */
   $sql = "
     UPDATE
       carts
     SET
-      amount = {$amount}
+      amount = :amount
     WHERE
-      cart_id = {$cart_id}
+      cart_id = :cart_id
     LIMIT 1
   ";
-  return execute_query($db, $sql);
+  /* $amountおよび$cart_idをPDOStatement::execute用の配列に格納 */
+  $params = array(':amount' => $amount, ':cart_id' => $cart_id);
+  return execute_query($db, $sql, $params);
 }
 
 function delete_cart($db, $cart_id){
+  /* 値を直接代入からPDOStatement::executeのバインド機能を使用したのもに修正 */
   $sql = "
     DELETE FROM
       carts
     WHERE
-      cart_id = {$cart_id}
+      cart_id = :cart_id
     LIMIT 1
   ";
-
-  return execute_query($db, $sql);
+  /* $cart_idをPDOStatement::execute用の配列に格納 */
+  $params = array(':cart_id' => $cart_id);
+  return execute_query($db, $sql, $params);
 }
 
 function purchase_carts($db, $carts){
@@ -107,26 +119,28 @@ function purchase_carts($db, $carts){
   }
   foreach($carts as $cart){
     if(update_item_stock(
-        $db, 
-        $cart['item_id'], 
+        $db,
+        $cart['item_id'],
         $cart['stock'] - $cart['amount']
       ) === false){
       set_error($cart['name'] . 'の購入に失敗しました。');
     }
   }
-  
+
   delete_user_carts($db, $carts[0]['user_id']);
 }
 
 function delete_user_carts($db, $user_id){
+  /* 値を直接代入からPDOStatement::executeのバインド機能を使用したのもに修正 */
   $sql = "
     DELETE FROM
       carts
     WHERE
-      user_id = {$user_id}
+      user_id = :user_id
   ";
-
-  execute_query($db, $sql);
+  /* $user_idをPDOStatement::execute用の配列に格納 */
+  $params = array(':user_id' => $user_id);
+  execute_query($db, $sql, $params);
 }
 
 
@@ -156,4 +170,3 @@ function validate_cart_purchase($carts){
   }
   return true;
 }
-
