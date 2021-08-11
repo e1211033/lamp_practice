@@ -101,12 +101,15 @@ function is_valid_password($password, $password_confirmation){
 }
 
 function insert_user($db, $name, $password){
+  /* 値を直接代入からPDOStatement::executeのバインド機能を使用したのもに修正 */
   $sql = "
     INSERT INTO
       users(name, password)
-    VALUES ('{$name}', '{$password}');
+    VALUES (:name, :password);
   ";
 
+  /* $name, $passwordをPDOStatement::execute用の配列に格納 */
+  $params = array(':name' => $name, ':password' => $password);
   return execute_query($db, $sql);
 }
 
