@@ -6,6 +6,9 @@ require_once MODEL_PATH . 'item.php';
 
 session_start();
 
+/* トークンの照合 */
+collation_csrf_token(get_post('token'), ADMIN_URL);
+
 if(is_logined() === false){
   redirect_to(LOGIN_URL);
 }
