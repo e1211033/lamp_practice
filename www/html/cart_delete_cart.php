@@ -7,6 +7,9 @@ require_once MODEL_PATH . 'cart.php';
 
 session_start();
 
+/* トークンの照合 */
+collation_csrf_token(get_post('token'), CART_URL);
+
 if(is_logined() === false){
   redirect_to(LOGIN_URL);
 }

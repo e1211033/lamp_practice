@@ -145,3 +145,50 @@ function is_valid_upload_image($image){
 function h ($str) {
   return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
 }
+
+
+/**
+ * トークンの生成
+ * 
+ * @return str $token 生成したトークン
+ */
+
+function get_csrf_token(){
+  // get_random_string()はユーザー定義関数。
+  $token = get_random_string(30);
+  // set_session()はユーザー定義関数。
+  set_session('csrf_token', $token);
+  return $token;
+}
+
+
+/**
+ * トークンのチェック
+ * 
+ * @param   str $token          POST投稿されたトークン
+ * @return  str (true or false) トークンの照合結果
+ */
+
+function is_valid_csrf_token($token){
+  if($token === '') {
+    return false;
+  }
+  // get_session()はユーザー定義関数
+  return $token === get_session('csrf_token');
+}
+
+
+/**
+ * トークンの照合
+ * 
+ * @param   str $token  POST投稿されたトークン
+ * @param   str $url    リダイレクト用url
+ */
+
+function collation_csrf_token($token, $url){
+  // トークンが不正な場合は処理を行わなず指定のurlにリダイレクトする
+  if(!is_valid_csrf_token($token)) {
+    set_error('トークンが不正です。');
+    redirect_to($url);
+  }
+}

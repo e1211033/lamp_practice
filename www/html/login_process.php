@@ -5,6 +5,9 @@ require_once MODEL_PATH . 'user.php';
 
 session_start();
 
+/* トークンの照合 */
+collation_csrf_token(get_post('token'), LOGIN_URL);
+
 if(is_logined() === true){
   redirect_to(HOME_URL);
 }
