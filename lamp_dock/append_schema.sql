@@ -13,3 +13,9 @@ CREATE TABLE order_detail (
   price             int(11)     NOT NULL,
   primary key(order_detail_id)
 );
+
+-- テーブルの制約 `order_detail`
+--
+ALTER TABLE `order_detail`
+  ADD CONSTRAINT `order_detail_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `order` (`order_id`);
+COMMIT;
