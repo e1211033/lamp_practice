@@ -19,11 +19,11 @@ function order_history_update($db, $carts, $user_id){
     set_error('注文履歴の更新に失敗しました。');
     return false;
   }
-  $order_id = get_last_insert_id($db);
+  $order_id = $db->lastInsertId('order_id');
   foreach($carts as $cart){
     if(insert_order_detail_history(
         $db,
-        $order_id['order_id'],
+        $order_id,
         $cart['item_id'],
         $cart['amount'],
         $cart['price']
@@ -53,23 +53,6 @@ function insert_order_history($db, $user_id){
   /* $user_idをPDOStatement::execute用の配列に格納 */
   $params = array(':user_id' => $user_id);
   return execute_query($db, $sql, $params);
-}
-
-
-/**
- * 最近挿入されたデータのid取得
- * 
- * @param   obj $db             DBハンドル
- * @return  (fetch_query())     最後に挿入されたデータのid または false
- */
-
-function get_last_insert_id($db){
-  $sql = "
-    SELECT order_id
-    FROM   `order`
-    WHERE  created = (SELECT MAX(created) FROM `order`);
-  ";
-  return fetch_query($db, $sql);
 }
 
 
