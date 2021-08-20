@@ -114,6 +114,6 @@ function insert_user($db, $name, $password){
 
   /* $name, $passwordをPDOStatement::execute用の配列に格納 */
   $params = array(':name' => $name, ':password' => $password);
-  return execute_query($db, $sql);
+  return execute_query($db, $sql, $params);
 }
 

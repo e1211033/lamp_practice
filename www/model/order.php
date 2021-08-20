@@ -8,7 +8,7 @@ require_once MODEL_PATH . 'db.php';
  * 
  * @param   obj $db               DBハンドル
  * @param   int $user_id          購入したユーザのid
- * @return  (execute_query())     sql文の実行結果(true or false)
+ * @return  true or false         注文履歴更新の可否
  */
 
 function order_history_update($db, $carts, $user_id){
@@ -32,6 +32,7 @@ function order_history_update($db, $carts, $user_id){
       return false;
     }
   }
+  return true;
 }
 
 
@@ -82,4 +83,100 @@ function insert_order_detail_history($db, $order_id, $item_id, $quantity, $price
   /* $order_id, $item_id, $quantity, $priceをPDOStatement::execute用の配列に格納 */
   $params = array(':order_id' => $order_id, ':item_id' => $item_id, ':quantity' => $quantity, ':price' => $price);
   return execute_query($db, $sql, $params);
+}
+
+
+/**
+ * 注文履歴取得
+ * 
+ * @param   obj $db               DBハンドル
+ * @param   str $user             ユーザー情報
+ * @return  (fetch_all_query())   sql文の実行結果(データベースの内容 or false)
+ */
+
+function get_order_history($db, $user){
+  /* 値を直接代入からPDOStatement::executeのバインド機能を使用したのもに修正 */
+  $sql = "
+    SELECT
+      order_id,
+      created
+    FROM
+      `order`
+  ";
+  if(is_admin($user) === false){
+    $sql .= "
+      WHERE 
+        user_id = :user_id
+    ";
+    /* $user_idをPDOStatement::execute用の配列に格納 */
+    $params = array(':user_id' => $user['user_id']);
+  }
+  $sql .= "
+    ORDER BY
+      created DESC
+  "; 
+  return fetch_all_query($db, $sql, $params);
+}
+
+
+/**
+ * 注文詳細取得(注文履歴での合計金額計算用)
+ * 
+ * @param   obj $db               DBハンドル
+ * @param   int $user             ユーザー情報
+ * @return  (fetch_all_query())   sql文の実行結果(データベースの内容 or false)
+ */
+
+function get_order_detail($db, $user){
+  /* 値を直接代入からPDOStatement::executeのバインド機能を使用したのもに修正 */
+  $sql = "
+    SELECT
+      `order`.order_id,
+      order_detail.quantity,
+      order_detail.price
+    FROM
+      order_detail
+    JOIN
+      `order`
+    ON
+      `order`.order_id = order_detail.order_id
+  ";
+if(is_admin($user) === false){
+  $sql .= "
+    WHERE user_id = :user_id
+  ";
+  /* $user_idをPDOStatement::execute用の配列に格納 */
+  $params = array(':user_id' => $user['user_id']);
+}
+  return fetch_all_query($db, $sql, $params);
+}
+
+
+/**
+ * 注文詳細取得(注文詳細画面表示用)
+ * 
+ * @param   obj $db               DBハンドル
+ * @param   int $order_id         注文番号id
+ * @return  (fetch_all_query())   sql文の実行結果(データベースの内容 or false)
+ */
+
+function get_order_detail_display($db, $order_id){
+  /* 値を直接代入からPDOStatement::executeのバインド機能を使用したのもに修正 */
+  $sql = "
+    SELECT
+      order_detail.quantity,
+      order_detail.price,
+      items.name
+    FROM
+      order_detail
+    JOIN
+      items
+    ON
+      order_detail.item_id = items.item_id
+    WHERE 
+      order_id = :order_id
+  ";
+  /* $user_idをPDOStatement::execute用の配列に格納 */
+  $params = array(':order_id' => $order_id);
+  return fetch_all_query($db, $sql, $params);
 }
