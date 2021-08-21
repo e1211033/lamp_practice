@@ -180,3 +180,40 @@ function get_order_detail_display($db, $order_id){
   $params = array(':order_id' => $order_id);
   return fetch_all_query($db, $sql, $params);
 }
+
+
+/**
+ * 購入数上位3商品の情報取得(注文詳細画面表示用)
+ * 
+ * @param   obj $db               DBハンドル
+ * @return  (fetch_all_query())   sql文の実行結果(データベースの内容 or false)
+ */
+
+function get_open_popular_items($db){
+  $sql = '
+    SELECT
+      items.item_id,
+      items.name,
+      items.stock,
+      items.price,
+      items.image,
+      items.status,
+      SUM(quantity)
+    FROM
+      order_detail
+    JOIN
+      items
+    ON
+      order_detail.item_id = items.item_id    
+    WHERE 
+      status = 1
+    GROUP BY
+      item_id
+    ORDER BY
+      SUM(quantity) DESC
+    LIMIT 
+      3
+    ';
+
+  return fetch_all_query($db, $sql);
+}
