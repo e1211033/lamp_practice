@@ -15,7 +15,9 @@ $db = get_db_connect();
 $user = get_login_user($db);
 
 $items = get_open_items($db);
-$popular_items = get_open_popular_items($db);
+// 並べ替えの初期設定は新着順とする
+$sort_key = '0';
+$popular_items = get_open_popular_items($db,$sort_key);
 
 /* トークンの生成 */
 $token = get_csrf_token();

@@ -10,6 +10,11 @@ function redirect_to($url){
   exit;
 }
 
+function post_redirect_to($url){
+  header('Location: ' . $url, true, 307);
+  exit;
+}
+
 function get_get($name){
   if(isset($_GET[$name]) === true){
     return $_GET[$name];

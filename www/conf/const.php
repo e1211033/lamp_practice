@@ -22,6 +22,7 @@ define('CART_URL', '/cart.php');
 define('ORDER_URL', '/order.php');
 define('FINISH_URL', '/finish.php');
 define('ADMIN_URL', '/admin.php');
+define('HOME_SORT_URL', '/index_sort.php');
 
 define('REGEXP_ALPHANUMERIC', '/\A[0-9a-zA-Z]+\z/');
 define('REGEXP_POSITIVE_INTEGER', '/\A([1-9][0-9]*|0)\z/');
@@ -50,3 +51,10 @@ define('PERMITTED_IMAGE_TYPES', array(
   IMAGETYPE_JPEG => 'jpg',
   IMAGETYPE_PNG => 'png',
 ));
+
+// 並び替え用配列
+$sort_list = array(
+  '0'=>'新着順',
+  '1'=>'価格の安い順',
+  '2'=>'価格の高い順'
+);
