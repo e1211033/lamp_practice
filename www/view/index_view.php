@@ -12,7 +12,7 @@
 
   <div class="container">
 
-    <form action="index_sort.php" method="post">
+    <form action="index.php" method="get">
       <div class="row justify-content-end">
         <div class="col-2">
           <select name="sort" class="form-control">
@@ -29,7 +29,6 @@
           <input type="submit" value="並び替え">
         </div>
       </div>
-      <input type="hidden" name="token" value="<?php print ($token);?>">
     </form>
 
     <h1>商品一覧</h1>

@@ -26,4 +26,4 @@ if(add_cart($db,$user['user_id'], $item_id)){
   set_error('カートの更新に失敗しました。');
 }
 
-post_redirect_to(HOME_SORT_URL);
+redirect_to(HOME_URL);

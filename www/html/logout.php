@@ -13,6 +13,9 @@ setcookie(session_name(), '', time() - 42000,
 );
 session_destroy();
 
+// cookieに保存されているsort情報を削除
+setcookie('sort', '', time() - 42000);
+
 /* トークンの生成 */
 $token = get_csrf_token();
 redirect_to(LOGIN_URL);
