@@ -24,7 +24,7 @@ function get_item($db, $item_id){
   return fetch_query($db, $sql, $params);
 }
 
-function get_items($db, $is_open = false){
+function get_items($db, $page = false, $is_open = false){
   $sql = '
     SELECT
       item_id,
@@ -41,7 +41,14 @@ function get_items($db, $is_open = false){
       WHERE status = 1
     ';
   }
-
+  if($page){
+    $sql .= '
+      LIMIT :page, 8
+    ';
+    /* $item_idをPDOStatement::execute用の配列に格納 */
+    $params = array(':page' => 8*($page-1));
+    return fetch_all_query($db, $sql,  $params);
+  }
   return fetch_all_query($db, $sql);
 }
 
@@ -49,8 +56,8 @@ function get_all_items($db){
   return get_items($db);
 }
 
-function get_open_items($db){
-  return get_items($db, true);
+function get_open_items($db, $page){
+  return get_items($db, $page, true);
 }
 
 function regist_item($db, $name, $price, $stock, $status, $image){
@@ -215,4 +222,57 @@ function is_valid_item_status($status){
     $is_valid = false;
   }
   return $is_valid;
+}
+
+
+
+/**
+ * 商品ページの総ページ数を取得
+ * 
+ * @param   obj $db           DBハンドル
+ * @return  int $total_pages  商品ページの総ページ数
+ */
+
+function get_total_numbers_of_pages($db){
+  $total_items = get_total_numbers_of_open_items($db);
+  if($total_items%8 !== 0){
+    $total_pages = 1;
+  }
+  $total_pages += floor((int)$total_items/8);
+  return $total_pages;
+}
+
+/**
+ * 公開設定のアイテムの総数を取得
+ * 
+ * @param   obj $db                       DBハンドル
+ * @param   str $is_open                  商品ステータス
+ * @return  (get_total_numbers_of_items)  公開設定のアイテムの総数
+ */
+
+function get_total_numbers_of_open_items($db){
+  return get_total_numbers_of_items($db, true);
+}
+
+/**
+ * アイテムの総数を取得
+ * 
+ * @param   obj $db             DBハンドル
+ * @param   str $is_open        商品ステータス
+ * @return  (fetch_all_query)   クエリの応答結果
+ */
+
+function get_total_numbers_of_items($db, $is_open = false){
+  $sql = '
+    SELECT
+      COUNT(item_id)
+    FROM
+      items
+  ';
+  if($is_open === true){
+    $sql .= '
+      WHERE status = 1
+    ';
+  }
+  return fetch_all_query($db, $sql);
 }

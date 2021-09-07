@@ -44,6 +44,34 @@
     </div>
   </div>
 
+  <div class="container mt-5">
+    <nav aria-label="Page navigation example">
+      <ul class="pagination">
+        <?php if($now_page === '1'){?>
+          <li class="page-item disabled"><a class="page-link" href="<?php print(HOME_PAGINATION_URL.'1');?>">最初へ</a></li>
+          <li class="page-item disabled"><a class="page-link" href="<?php print(HOME_PAGINATION_URL).((int)$now_page-1);?>">前へ</a></li>
+        <?php } else {?>
+          <li class="page-item"><a class="page-link" href="<?php print(HOME_PAGINATION_URL.'1');?>">最初へ</a></li>
+          <li class="page-item"><a class="page-link" href="<?php print(HOME_PAGINATION_URL).((int)$now_page-1);?>">前へ</a></li>
+        <?php }?>
+        <?php for($i = 1; $i <= $total_pages; $i++){ ?>
+          <?php if($i === (int)$now_page){?>
+            <li class="page-item active" aria-current="page"><a class="page-link" href="<?php print(HOME_PAGINATION_URL).$i;?>"><?php print($i)?></a></li>
+          <?php } else {?>
+            <li class="page-item"><a class="page-link" href="<?php print(HOME_PAGINATION_URL).$i;?>"><?php print($i)?></a></li>
+          <?php }?>
+        <?php }?>
+        <?php if($now_page === (string)$total_pages){?>
+          <li class="page-item disabled"><a class="page-link" href="<?php print(HOME_PAGINATION_URL).((int)$now_page+1);?>">次へ</a></li>
+          <li class="page-item disabled"><a class="page-link" href="<?php print(HOME_PAGINATION_URL.'1');?>">最後へ</a></li>
+        <?php } else {?>
+          <li class="page-item"><a class="page-link" href="<?php print(HOME_PAGINATION_URL).((int)$now_page+1);?>">次へ</a></li>
+          <li class="page-item"><a class="page-link" href="<?php print(HOME_PAGINATION_URL.'1');?>">最後へ</a></li>
+        <?php }?>
+      </ul>
+    </nav>
+  </div>
+
   <div class="container border-top mt-5">
     <h1 class="mt-3">人気ランキング</h1>
     <div class="card-deck">
@@ -75,6 +103,24 @@
       </div>
     </div>
   </div>
+
+  <!-- <div class="container" style="padding: 20px;">
+		<ul class="pager">
+			<li class="previous"><a href="<?php print(HOME_PAGINATION_URL);?>".((int)$now_page-1)>前へ</a></li>
+			<li class="next"><a href="<?php print(HOME_PAGINATION_URL);?>".((int)$now_page+1)>次へ</a></li>
+		</ul>
+    <ul class=”pagination”>
+    　<li class=”disabled“><a href="<?php print(HOME_PAGINATION_URL);?>".((int)$now_page-1)>&laquo;</a></li>
+      <?php for($i = 1; $i <= $total_pages; $i++){ ?>
+        <?php if($i === $now_page){?>
+  　      <li class=”active“><a href="<?php print(HOME_PAGINATION_URL);?>".$i><?php print($i)?></a></li>
+        <?php } else {?>
+          <li><a href="<?php print(HOME_PAGINATION_URL);?>".$i><?php print($i)?></a></li>
+        <?php }?>
+      <?php }?>
+    　  <li><a href="<?php print(HOME_PAGINATION_URL);?>".((int)$now_page+1)>&raquo;</a></li>
+    </ul>
+  </div> -->
 
 </body>
 </html>
