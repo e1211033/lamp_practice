@@ -50,3 +50,10 @@ define('PERMITTED_IMAGE_TYPES', array(
   IMAGETYPE_JPEG => 'jpg',
   IMAGETYPE_PNG => 'png',
 ));
+
+// 並び替え用配列
+$sort_list = array(
+  '0'=>'新着順',
+  '1'=>'価格の安い順',
+  '2'=>'価格の高い順'
+);

@@ -11,6 +11,26 @@
   
 
   <div class="container">
+
+    <form action="index.php" method="get">
+      <div class="row justify-content-end">
+        <div class="col-2">
+          <select name="sort" class="form-control">
+<?php       foreach ($sort_list as $key => $value) {?>
+<?php         if (isset($sort_key) && ((int)$sort_key === $key)) {?>
+                <option value = "<?php print ($key); ?>" selected><?php print $value; ?></option>
+<?php         } else {?>
+                <option value = "<?php print ($key); ?>"><?php print $value; ?></option>
+<?php         }?>
+<?php       }?> 
+          </select>
+        </div>
+        <div class="col-1">
+          <input type="submit" value="並び替え">
+        </div>
+      </div>
+    </form>
+
     <h1>商品一覧</h1>
     <?php include VIEW_PATH . 'templates/messages.php'; ?>
 
@@ -31,6 +51,7 @@
                     <input type="submit" value="カートに追加" class="btn btn-primary btn-block">
                     <input type="hidden" name="item_id" value="<?php print($item['item_id']); ?>">
                     <input type="hidden" name="token" value="<?php print ($token);?>">
+                    <input type="hidden" name="sort" value="<?php print ($sort_key); ?>">
                   </form>
                 <?php } else { ?>
                   <p class="text-danger">現在売り切れです。</p>
@@ -63,6 +84,7 @@
                     <input type="submit" value="カートに追加" class="btn btn-primary btn-block">
                     <input type="hidden" name="item_id" value="<?php print($popular_item['item_id']); ?>">
                     <input type="hidden" name="token" value="<?php print ($token);?>">
+                    <input type="hidden" name="sort" value="<?php print ($sort_key); ?>">
                   </form>
                 <?php } else { ?>
                   <p class="text-danger">現在売り切れです。</p>

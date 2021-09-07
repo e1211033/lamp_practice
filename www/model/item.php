@@ -24,7 +24,7 @@ function get_item($db, $item_id){
   return fetch_query($db, $sql, $params);
 }
 
-function get_items($db, $is_open = false){
+function get_items($db, $is_open = false, $sort_key = '0'){
   $sql = '
     SELECT
       item_id,
@@ -42,6 +42,14 @@ function get_items($db, $is_open = false){
     ';
   }
 
+  $sql .= 'ORDER BY ';
+  if($sort_key === '0') {
+    $sql .= 'created DESC';    
+  } elseif($sort_key === '1') {
+    $sql .= 'price ASC';    
+  } elseif($sort_key === '2') {
+    $sql .= 'price DESC';    
+  }
   return fetch_all_query($db, $sql);
 }
 
@@ -49,8 +57,8 @@ function get_all_items($db){
   return get_items($db);
 }
 
-function get_open_items($db){
-  return get_items($db, true);
+function get_open_items($db, $sort_key = '0'){
+  return get_items($db, true, $sort_key);
 }
 
 function regist_item($db, $name, $price, $stock, $status, $image){
