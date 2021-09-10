@@ -15,6 +15,8 @@ session_destroy();
 
 // cookieに保存されているsort情報を削除
 setcookie('sort', '', time() - 42000);
+// cookieに保存されている情報を削除
+setcookie('now_page', '', time() - 42000);
 
 /* トークンの生成 */
 $token = get_csrf_token();

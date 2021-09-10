@@ -16,6 +16,8 @@ $user = get_login_user($db);
 
 // 並び替えの種類判定用変数にGETで投稿されたsortの情報を$sort_keyに代入
 $sort_key = get_get('sort');
+// ページ番号判定用変数($now_page)にGETで投稿されたのnow_pageの情報を代入
+$now_page = get_get('now_page');
 
 // $sort_keyが$sort_listのいずれのキーにも該当しない場合
 if (!array_key_exists($sort_key,$sort_list)) {
@@ -29,7 +31,30 @@ if (!array_key_exists($sort_key,$sort_list)) {
 }
 // $sort_keyの内容をcookieに保存
 setcookie('sort', $sort_key, time()+3600);
-$items = get_open_items($db, $sort_key);
+
+// $now_pageが''の場合場合
+if(!$now_page){
+  // cookie(now_page)に$now_pageの情報が保存されていない場合、1ページ目を取得する
+  if(!$_COOKIE['now_page']){
+    $now_page = '1';
+  // cookie(now_page)に$now_pageの情報が保存されている場合、cookie(now_page)に保存されているページ番号を取得する
+} else {
+    $now_page = $_COOKIE['now_page'];
+  }
+}
+// $now_pageの内容をcookieに保存
+setcookie('now_page', $now_page, time()+3600);
+
+// 現在のページ番号および並べ替えに対応する商品を取得
+$items = get_open_items($db, $sort_key, $now_page);
+// 商品ページの総商品取得数を取得
+$total_number_of_items = get_total_number_of_open_items($db);
+// 商品ページの総ページ数を取得
+$total_number_of_pages = get_total_number_of_pages($total_number_of_items);
+// 商品ページで最初に取得するアイテムの件数
+$start_number_of_items = get_start_number_of_items($now_page);
+// 商品ページで最後に取得するアイテムの件数
+$end_number_of_items = get_end_number_of_items($total_number_of_items, $start_number_of_items);
 $popular_items = get_open_popular_items($db);
 
 /* トークンの生成 */

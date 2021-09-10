@@ -24,7 +24,8 @@ function get_item($db, $item_id){
   return fetch_query($db, $sql, $params);
 }
 
-function get_items($db, $is_open = false, $sort_key = '0'){
+function get_items($db, $is_open = false, $sort_key = '0', $page = false){
+  /* 値を直接代入からPDOStatement::executeのバインド機能を使用したのもに修正 */
   $sql = '
     SELECT
       item_id,
@@ -50,6 +51,16 @@ function get_items($db, $is_open = false, $sort_key = '0'){
   } elseif($sort_key === '2') {
     $sql .= 'price DESC';    
   }
+
+  if($page){
+    $sql .= '
+      LIMIT :page, :pagination
+    ';
+    /* $item_idをPDOStatement::execute用の配列に格納 */
+    $params = array(':page' => PAGINATION_NUMBER*($page-1), 'pagination' => PAGINATION_NUMBER);
+    return fetch_all_query($db, $sql,  $params);
+  }
+
   return fetch_all_query($db, $sql);
 }
 
@@ -57,8 +68,8 @@ function get_all_items($db){
   return get_items($db);
 }
 
-function get_open_items($db, $sort_key = '0'){
-  return get_items($db, true, $sort_key);
+function get_open_items($db, $sort_key = '0', $page = '1'){
+  return get_items($db, true, $sort_key, $page);
 }
 
 function regist_item($db, $name, $price, $stock, $status, $image){
@@ -224,3 +235,97 @@ function is_valid_item_status($status){
   }
   return $is_valid;
 }
+
+
+/**
+ * 商品ページの総ページ数を取得
+ * 
+ * @param   int $total_items  商品の総数
+ * @return  int $total_pages  商品ページの総ページ数
+ */
+
+function get_total_number_of_pages($total_items){
+  $total_pages = floor($total_items/PAGINATION_NUMBER);
+  if(($total_items%PAGINATION_NUMBER) !== 0){
+    $total_pages += 1;
+  }
+  return $total_pages;
+}
+
+
+/**
+ * 取得する商品の先頭の件数
+ * 
+ * @param   int $now_page                           表示する商品一覧ページのページ番号
+ * @return  (PAGINATION_NUMBER*($now_page-1) + 1)   表示する商品一覧ページの先頭の商品の件数
+ */
+
+function get_start_number_of_items($now_page){
+  return (PAGINATION_NUMBER*($now_page-1) + 1);
+}
+
+
+/**
+ * 取得する商品の末尾の件数
+ * 
+ * @param   int $total_items    取得した商品の総数
+ * @param   int $start_items    表示する商品一覧ページの先頭の商品の件数
+ * @return  int $end_items      表示する商品一覧ページの末尾の商品の件数
+ */
+
+function get_end_number_of_items($total_items, $start_items){
+  $tmp = $total_items-$start_items;
+  if($tmp < (PAGINATION_NUMBER-1)){
+    $end_items = $start_items + $tmp;
+  } else {
+    $end_items = $start_items + (PAGINATION_NUMBER-1);
+  }
+  return $end_items;
+}
+
+
+/**
+ * 公開設定のアイテムの総数を取得
+ * 
+ * @param   obj $db                       DBハンドル
+ * @param   str $is_open                  商品ステータス
+ * @return  (get_total_numbers_of_items)  公開設定のアイテムの総数
+ */
+
+function get_total_number_of_open_items($db){
+  $tmp = get_number_of_items($db, true);
+  return $tmp['count'];
+}
+
+
+/**
+ * 取得したアイテムの件数を取得(取得が8件中何件か判定する)
+ * 
+ * @param   obj $db             DBハンドル
+ * @param   str $is_open        商品ステータス
+ * @param   int $page           ページ番号
+ * @return  (fetch_all_query)   クエリの応答結果
+ */
+
+function get_number_of_items($db, $is_open = false, $page=false){
+  $sql = '
+    SELECT
+      COUNT(item_id) AS count
+    FROM
+      items
+  ';
+  if($is_open === true){
+    $sql .= '
+      WHERE status = 1
+    ';
+  }
+  if($page){
+    $sql .= '
+      LIMIT :page, 8
+    ';
+    /* $item_idをPDOStatement::execute用の配列に格納 */
+    $params = array(':page' => PAGINATION_NUMBER*($page-1));
+    return fetch_query($db, $sql, $params);
+  }
+  return fetch_query($db, $sql);
+} 
